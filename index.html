@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS + CSS Clock</title>
+  
+  <style>
+    :root{
+    --range: 20px;
+    --color:#FFFFFF;
+}
+
+
+html {
+      background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5);
+      background-size: cover;
+      font-family: 'helvetica neue';
+      text-align: center;
+      font-size: 10px;
+    }
+   
+    body {
+      margin: 0;
+      font-size: 2rem;
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+     align-items: center;
+    }
+    
+    .clock {
+        
+      width: 30rem;
+      height: 30rem;
+      border: var(--range) solid var(--color);
+      border-radius: 50%;
+      margin: 50px auto;
+      position: relative;
+      padding: 2rem;
+      box-shadow:
+        0 0 0 4px rgba(0,0,0,0.1),
+        inset 0 0 0 3px #EFEFEF,
+        inset 0 0 10px grey,
+        0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .clock-face {
+      position: relative;
+      width: 100%;
+      height: 100%;
+       /* account for the height of the clock hands */
+    }
+
+    .hour-hand,.min-hand,.second-hand {
+    
+      height:6px;
+      background: black;
+      position: absolute;
+      top: 50%;
+      
+      transform-origin: 100%;
+      transform: rotate(90deg);
+      
+      transition-timing-function: cubic-bezier(0.1, 1.49, 0.96, 0.95);
+    }
+.hour-hand{
+  left: 10%;
+  width: 40%;
+}
+.min-hand{
+  width:50%;
+}
+.second-hand{
+  width:30%;
+  left:20%;
+}
+  </style>
+
+</head>
+<body>
+
+<div class="options" >
+  <label >Width:</label><input type="range" min="0" max="80" name="range"value="20" data-size="px"><br>
+  <label>color:</label><input type="color" name="color" value="#FFFFFF">
+
+</div>
+    <div class="clock">
+      <div class="clock-face">
+        <div class="hour-hand"></div>
+        <div class="min-hand"></div>
+        <div class="second-hand"></div>
+      </div>
+    </div>
+
+  <script>
+    //clock
+    const second=document.querySelector('.second-hand');
+    const minutes=document.querySelector('.min-hand');
+    const hour=document.querySelector('.hour-hand');
+function date(){
+ const now= new Date();
+ const sec=now.getSeconds();
+ const secdegree=((sec/60)*360)+90;
+ second.style.transform=`rotate(${secdegree}deg)`;
+ const min=now.getMinutes();
+ const mindegree=((min/60)*360)+90;
+ minutes.style.transform=`rotate(${mindegree}deg)`;
+ const hr=now.getHours();
+ const hrdegree=((hr/24)*360);
+ hour.style.transform=`rotate(${hrdegree}deg)`;
+ }
+setInterval(date,1000);
+// change options
+const inputs=document.querySelectorAll('.options input');
+function update(){
+const suffix=this.dataset.size ||'';
+console.log(suffix);
+document.documentElement.style.setProperty(`--${this.name}`, this.value +suffix);
+
+}
+inputs.forEach(a => a.addEventListener('change',update));
+inputs.forEach(a => a.addEventListener('mousemove',update));
+
+  </script>
+</body>
+</html>
