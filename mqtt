@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mqtt protocol client</title>
+    
+    <style>
+        body{
+    background-image: url('https://images.unsplash.com/photo-1506968430777-bf7784a87f23?ixlib=rb-1.2.1&w=1000&q=80');
+    background-size: cover;
+    color:whitesmoke;
+}
+.con{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.con-hide{
+    display: none;
+}
+.publish{
+    position: absolute;
+    top: 30%;
+    left: 40%;
+   
+    
+}
+.subscribe{
+    position: absolute;
+    top: 50%;
+    left: 40%;
+    
+    
+  background-color: rgba(0,0, 0, 0.2);
+
+}
+input{
+    border-radius: 30px;
+}
+
+    </style>
+
+    <script src="https://use.fontawesome.com/cad1b8b27e.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js" type="text/javascript"></script>
+    <script>
+       var client;
+        
+        function MQTTconnect()
+        {
+            
+        var host= document.getElementById("host").value;//"broker.hivemq.com";
+        var port=parseInt(document.getElementById("port").value);//8000;
+        var clientID =document.getElementById("client").value;//"clientID_" + parseInt(Math.random() * 100);
+         
+            client= new Paho.MQTT.Client(host,port,clientID);
+            client.onMessageArrived=recieved;
+
+           
+            
+            var status={
+
+            timeout:3,
+            
+            onSuccess:()=>{
+                alert('connected');
+                document.getElementById("connect").className="con-hide"
+                
+               
+                },
+            onFailure:((err)=>alert('not connected')+err.errormessage),
+            
+
+          }
+          client.connect(status);
+        };
+        
+        function sendmessage(){
+            var clientID = document.getElementById("client").value;//"clientID_" + parseInt(Math.random() * 100);
+            var a=document.getElementById("data").value;
+            var mess=clientID+": "+a;
+            var topic=document.getElementById("title").value;
+            message=new Paho.MQTT.Message(mess);
+            message.destinationName=topic;
+            client.send(message);
+            console.log(message.destinationName,message);
+            
+             }
+function subscribe(){
+    var topic=document.getElementById("title").value;
+    
+    client.subscribe(topic);
+    
+}
+        
+  function recieved(message){
+            console.log("came!!!!!");
+            let p = document.createElement('p');
+            p.textContent= ( message.payloadString);
+            const words = document.querySelector('.subscribe');
+            words.appendChild(p);
+            
+
+        }
+       
+    </script>
+</head>
+<body>
+    <div id="connect" class="con">
+        <span>Host: </span><select id="host">
+            <option>broker.hivemq.com</option>
+            <option>test.mosquitto.org</option>
+        </select>
+        <br><br>
+        <span>Port: </span><select id="port">
+            <option>8000</option>
+            <option>8080</option>
+        </select>
+            <br>
+        <span>Name: </span><input type="text" id="client"><br>
+    
+       <button onclick="MQTTconnect()"><i class="fa fa-plug" aria-hidden="true">Connect</i></button><br>
+    </div>
+    
+   <div class="publish">
+        <span>Topic:</span><input type="text" id="title">
+        <button onclick="subscribe()">
+            <i class="fa fa-handshake-o" aria-hidden="true">Subscribe</i>
+        </button><br>
+        <span>Message:</span> <input type="text" id="data">
+        <button onclick="sendmessage()"><i class="fa fa-comment" aria-hidden="true">publish</i></button>
+    </div>
+    <div class="subscribe"></div>
+   
+    
+   
+   
+</body>
+</html>
